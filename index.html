@@ -12,19 +12,25 @@
     <header class="header">
         <nav class="navbar">
             <div class="logo">
-                <span>Site</span> Garage
+            <span>Site</span> Garage
             </div>
 
-            <ul class="nav-links">
-                <li><a href="#accueil">Accueil</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#vehicules">Véhicules</a></li>
-                <li><a href="#nettoyage">Nettoyage</a></li>
-                <li><a href="#pieces">Pièces</a></li>
-                <li><a href="#contact">Contact</a></li>
+            <ul class="nav-links" id="navLinks">
+            <li><a href="#accueil">Accueil</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#vehicules">Véhicules</a></li>
+            <li><a href="#nettoyage">Nettoyage</a></li>
+            <li><a href="#pieces">Pièces</a></li>
+            <li><a href="#contact">Contact</a></li>
             </ul>
 
             <a href="#contact" class="nav-btn">Nous contacter</a>
+
+            <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu">
+            <span></span>
+            <span></span>
+            <span></span>
+            </button>
         </nav>
     </header>
 
@@ -243,6 +249,15 @@
         <p>© 2026 Site Garage. Tous droits réservés.</p>
     </footer>
 
+    <div class="floating-actions">
+        <a href="tel:0600000000" class="floating-btn phone-btn" title="Appeler">
+        ☎
+        </a>
+
+        <a href="https://wa.me/33600000000" target="_blank" class="floating-btn whatsapp-btn" title="WhatsApp">
+        ✆
+        </a>
+    </div>
     <script src="js/script.js"></script>
 </body>
 </html>
