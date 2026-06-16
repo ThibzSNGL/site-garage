@@ -1,4 +1,54 @@
-<?php include 'includes/header.php'; ?>
+<?php
+require_once 'config/db.php';
+
+$search = $_GET['search'] ?? '';
+$carburant = $_GET['carburant'] ?? '';
+$boite = $_GET['boite'] ?? '';
+$prix_max = $_GET['prix_max'] ?? '';
+$km_max = $_GET['km_max'] ?? '';
+$annee_min = $_GET['annee_min'] ?? '';
+
+$sql = "SELECT * FROM vehicules WHERE 1=1";
+$params = [];
+
+if (!empty($search)) {
+    $sql .= " AND (marque LIKE :search OR modele LIKE :search OR version LIKE :search)";
+    $params[':search'] = '%' . $search . '%';
+}
+
+if (!empty($carburant)) {
+    $sql .= " AND carburant = :carburant";
+    $params[':carburant'] = $carburant;
+}
+
+if (!empty($boite)) {
+    $sql .= " AND boite = :boite";
+    $params[':boite'] = $boite;
+}
+
+if (!empty($prix_max)) {
+    $sql .= " AND prix <= :prix_max";
+    $params[':prix_max'] = $prix_max;
+}
+
+if (!empty($km_max)) {
+    $sql .= " AND kilometrage <= :km_max";
+    $params[':km_max'] = $km_max;
+}
+
+if (!empty($annee_min)) {
+    $sql .= " AND annee >= :annee_min";
+    $params[':annee_min'] = $annee_min;
+}
+
+$sql .= " ORDER BY date_ajout DESC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$vehicules = $stmt->fetchAll();
+
+include 'includes/header.php';
+?>
 
 <main>
 
@@ -22,56 +72,62 @@
                 <h2>Trouvez votre prochain véhicule</h2>
             </div>
 
-            <form class="filters-form">
+            <form class="filters-form" method="GET" action="vehicules.php">
                 <div class="form-row">
-                    <input type="text" placeholder="Rechercher une marque, un modèle...">
+                <input 
+                        type="text" 
+                        name="search"
+                        placeholder="Rechercher une marque, un modèle..."
+                        value="<?= htmlspecialchars($search) ?>"
+                    >
 
-                    <select>
+                    <select name="carburant">
                         <option value="">Carburant</option>
-                        <option value="essence">Essence</option>
-                        <option value="diesel">Diesel</option>
-                        <option value="hybride">Hybride</option>
-                        <option value="electrique">Électrique</option>
+                        <option value="essence" <?= $carburant === 'essence' ? 'selected' : '' ?>>Essence</option>
+                        <option value="diesel" <?= $carburant === 'diesel' ? 'selected' : '' ?>>Diesel</option>
+                        <option value="hybride" <?= $carburant === 'hybride' ? 'selected' : '' ?>>Hybride</option>
+                        <option value="electrique" <?= $carburant === 'electrique' ? 'selected' : '' ?>>Électrique</option>
+                        <option value="autre" <?= $carburant === 'autre' ? 'selected' : '' ?>>Autre</option>
                     </select>
 
-                    <select>
+                    <select name="boite">
                         <option value="">Boîte</option>
-                        <option value="manuelle">Manuelle</option>
-                        <option value="automatique">Automatique</option>
+                        <option value="manuelle" <?= $boite === 'manuelle' ? 'selected' : '' ?>>Manuelle</option>
+                        <option value="automatique" <?= $boite === 'automatique' ? 'selected' : '' ?>>Automatique</option>
                     </select>
                 </div>
 
                 <div class="form-row">
-                    <select>
+                    <select name="prix_max">
                         <option value="">Prix maximum</option>
-                        <option value="10000">10 000 €</option>
-                        <option value="15000">15 000 €</option>
-                        <option value="20000">20 000 €</option>
-                        <option value="30000">30 000 €</option>
-                        <option value="50000">50 000 €</option>
+                        <option value="10000" <?= $prix_max === '10000' ? 'selected' : '' ?>>10 000 €</option>
+                        <option value="15000" <?= $prix_max === '15000' ? 'selected' : '' ?>>15 000 €</option>
+                        <option value="20000" <?= $prix_max === '20000' ? 'selected' : '' ?>>20 000 €</option>
+                        <option value="30000" <?= $prix_max === '30000' ? 'selected' : '' ?>>30 000 €</option>
+                        <option value="50000" <?= $prix_max === '50000' ? 'selected' : '' ?>>50 000 €</option>
                     </select>
 
-                    <select>
+                    <select name="km_max">
                         <option value="">Kilométrage maximum</option>
-                        <option value="50000">50 000 km</option>
-                        <option value="100000">100 000 km</option>
-                        <option value="150000">150 000 km</option>
-                        <option value="200000">200 000 km</option>
+                        <option value="50000" <?= $km_max === '50000' ? 'selected' : '' ?>>50 000 km</option>
+                        <option value="100000" <?= $km_max === '100000' ? 'selected' : '' ?>>100 000 km</option>
+                        <option value="150000" <?= $km_max === '150000' ? 'selected' : '' ?>>150 000 km</option>
+                        <option value="200000" <?= $km_max === '200000' ? 'selected' : '' ?>>200 000 km</option>
                     </select>
 
-                    <select>
+                    <select name="annee_min">
                         <option value="">Année minimum</option>
-                        <option value="2024">2024</option>
-                        <option value="2022">2022</option>
-                        <option value="2020">2020</option>
-                        <option value="2018">2018</option>
-                        <option value="2015">2015</option>
+                        <option value="2024" <?= $annee_min === '2024' ? 'selected' : '' ?>>2024</option>
+                        <option value="2022" <?= $annee_min === '2022' ? 'selected' : '' ?>>2022</option>
+                        <option value="2020" <?= $annee_min === '2020' ? 'selected' : '' ?>>2020</option>
+                        <option value="2018" <?= $annee_min === '2018' ? 'selected' : '' ?>>2018</option>
+                        <option value="2015" <?= $annee_min === '2015' ? 'selected' : '' ?>>2015</option>
                     </select>
                 </div>
 
                 <div class="filters-actions">
-                    <button type="button" class="btn btn-primary">Rechercher</button>
-                    <button type="reset" class="btn btn-light">Réinitialiser</button>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                    <a href="vehicules.php" class="btn btn-light">Réinitialiser</a>
                 </div>
             </form>
         </div>
@@ -86,185 +142,75 @@
 
         <div class="vehicles-grid vehicles-page-grid">
 
-            <!-- VEHICULE 1 -->
-            <article class="vehicle-card vehicle-full-card">
-                <div class="vehicle-image placeholder-img">
-                    Image véhicule
-                    <span class="vehicle-status">Disponible</span>
-                </div>
+                <?php if (count($vehicules) > 0): ?>
 
-                <div class="vehicle-info">
-                    <div class="vehicle-top">
-                        <span class="badge">Diesel</span>
-                        <span class="vehicle-year">2019</span>
+                    <?php foreach ($vehicules as $vehicule): ?>
+
+                        <article class="vehicle-card vehicle-full-card">
+                            <div class="vehicle-image placeholder-img">
+                                <?php if (!empty($vehicule['image_principale'])): ?>
+                                    <img 
+                                        src="<?= htmlspecialchars($vehicule['image_principale']) ?>" 
+                                        alt="<?= htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']) ?>"
+                                    >
+                                <?php else: ?>
+                                    Image véhicule
+                                <?php endif; ?>
+
+                                <span class="vehicle-status <?= $vehicule['statut'] === 'vendu' ? 'sold' : '' ?>">
+                                    <?= ucfirst(htmlspecialchars($vehicule['statut'])) ?>
+                                </span>
+                            </div>
+
+                            <div class="vehicle-info">
+                                <div class="vehicle-top">
+                                    <span class="badge">
+                                        <?= ucfirst(htmlspecialchars($vehicule['carburant'])) ?>
+                                    </span>
+
+                                    <span class="vehicle-year">
+                                        <?= htmlspecialchars($vehicule['annee']) ?>
+                                    </span>
+                                </div>
+
+                                <h3>
+                                    <?= htmlspecialchars($vehicule['marque'] . ' ' . $vehicule['modele']) ?>
+                                </h3>
+
+                                <?php if (!empty($vehicule['version'])): ?>
+                                    <p><?= htmlspecialchars($vehicule['version']) ?></p>
+                                <?php endif; ?>
+
+                                <ul class="vehicle-details">
+                                    <li><?= number_format($vehicule['kilometrage'], 0, ',', ' ') ?> km</li>
+                                    <li>Boîte <?= htmlspecialchars($vehicule['boite']) ?></li>
+                                    <li><?= ucfirst(htmlspecialchars($vehicule['carburant'])) ?></li>
+                                </ul>
+
+                                <strong>
+                                    <?= number_format($vehicule['prix'], 0, ',', ' ') ?> €
+                                </strong>
+
+                                <div class="vehicle-actions">
+                                    <a href="contact.php" class="btn-small">Contacter</a>
+                                <a href="#" class="vehicle-link">Voir détails</a>
+                                </div>
+                            </div>
+                        </article>
+
+                    <?php endforeach; ?>
+
+                <?php else: ?>
+
+                    <div class="empty-state">
+                        <h3>Aucun véhicule trouvé</h3>
+                        <p>Aucun véhicule ne correspond à votre recherche pour le moment.</p>
+                        <a href="vehicules.php" class="btn btn-primary">Voir tous les véhicules</a>
                     </div>
 
-                    <h3>Mercedes Classe V</h3>
+                <?php endif; ?>
 
-                    <ul class="vehicle-details">
-                        <li>85 000 km</li>
-                        <li>Boîte automatique</li>
-                        <li>7 places</li>
-                    </ul>
-
-                    <strong>39 990 €</strong>
-
-                    <div class="vehicle-actions">
-                        <a href="contact.php" class="btn-small">Contacter</a>
-                        <a href="#" class="vehicle-link">Voir détails</a>
-                    </div>
-                </div>
-            </article>
-
-            <!-- VEHICULE 2 -->
-            <article class="vehicle-card vehicle-full-card">
-                <div class="vehicle-image placeholder-img">
-                    Image véhicule
-                    <span class="vehicle-status">Disponible</span>
-                </div>
-
-                <div class="vehicle-info">
-                    <div class="vehicle-top">
-                        <span class="badge">Essence</span>
-                        <span class="vehicle-year">2020</span>
-                    </div>
-
-                    <h3>Citroën C5 Shine</h3>
-
-                    <ul class="vehicle-details">
-                        <li>62 000 km</li>
-                        <li>Boîte manuelle</li>
-                        <li>5 places</li>
-                    </ul>
-
-                    <strong>18 490 €</strong>
-
-                    <div class="vehicle-actions">
-                        <a href="contact.php" class="btn-small">Contacter</a>
-                        <a href="#" class="vehicle-link">Voir détails</a>
-                    </div>
-                </div>
-            </article>
-
-            <!-- VEHICULE 3 -->
-            <article class="vehicle-card vehicle-full-card">
-                <div class="vehicle-image placeholder-img">
-                    Image véhicule
-                    <span class="vehicle-status">Disponible</span>
-                </div>
-
-                <div class="vehicle-info">
-                    <div class="vehicle-top">
-                        <span class="badge">Essence</span>
-                        <span class="vehicle-year">2021</span>
-                    </div>
-
-                    <h3>Renault Clio V</h3>
-
-                    <ul class="vehicle-details">
-                        <li>45 000 km</li>
-                        <li>Boîte manuelle</li>
-                        <li>5 places</li>
-                    </ul>
-
-                    <strong>13 990 €</strong>
-
-                    <div class="vehicle-actions">
-                        <a href="contact.php" class="btn-small">Contacter</a>
-                        <a href="#" class="vehicle-link">Voir détails</a>
-                    </div>
-                </div>
-            </article>
-
-            <!-- VEHICULE 4 -->
-            <article class="vehicle-card vehicle-full-card">
-                <div class="vehicle-image placeholder-img">
-                    Image véhicule
-                    <span class="vehicle-status">Disponible</span>
-                </div>
-
-                <div class="vehicle-info">
-                    <div class="vehicle-top">
-                        <span class="badge">Hybride</span>
-                        <span class="vehicle-year">2022</span>
-                    </div>
-
-                    <h3>Toyota Corolla</h3>
-
-                    <ul class="vehicle-details">
-                        <li>38 000 km</li>
-                        <li>Boîte automatique</li>
-                        <li>5 places</li>
-                    </ul>
-
-                    <strong>22 990 €</strong>
-
-                    <div class="vehicle-actions">
-                        <a href="contact.php" class="btn-small">Contacter</a>
-                        <a href="#" class="vehicle-link">Voir détails</a>
-                    </div>
-                </div>
-            </article>
-
-            <!-- VEHICULE 5 -->
-            <article class="vehicle-card vehicle-full-card">
-                <div class="vehicle-image placeholder-img">
-                    Image véhicule
-                    <span class="vehicle-status sold">Vendu</span>
-                </div>
-
-                <div class="vehicle-info">
-                    <div class="vehicle-top">
-                        <span class="badge">Diesel</span>
-                        <span class="vehicle-year">2018</span>
-                    </div>
-
-                    <h3>Peugeot 3008</h3>
-
-                    <ul class="vehicle-details">
-                        <li>96 000 km</li>
-                        <li>Boîte manuelle</li>
-                        <li>5 places</li>
-                    </ul>
-
-                    <strong>16 990 €</strong>
-
-                    <div class="vehicle-actions">
-                        <a href="contact.php" class="btn-small">Contacter</a>
-                        <a href="#" class="vehicle-link">Voir détails</a>
-                    </div>
-                </div>
-            </article>
-
-            <!-- VEHICULE 6 -->
-            <article class="vehicle-card vehicle-full-card">
-                <div class="vehicle-image placeholder-img">
-                    Image véhicule
-                    <span class="vehicle-status">Disponible</span>
-                </div>
-
-                <div class="vehicle-info">
-                    <div class="vehicle-top">
-                        <span class="badge">Électrique</span>
-                        <span class="vehicle-year">2023</span>
-                    </div>
-
-                    <h3>Renault Mégane E-Tech</h3>
-
-                    <ul class="vehicle-details">
-                        <li>18 000 km</li>
-                        <li>Boîte automatique</li>
-                        <li>5 places</li>
-                    </ul>
-
-                    <strong>28 990 €</strong>
-
-                    <div class="vehicle-actions">
-                        <a href="contact.php" class="btn-small">Contacter</a>
-                        <a href="#" class="vehicle-link">Voir détails</a>
-                    </div>
-                </div>
-            </article>
+            </div>
 
         </div>
     </section>
