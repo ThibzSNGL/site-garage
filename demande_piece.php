@@ -1,4 +1,83 @@
-<?php include 'includes/header.php'; ?>
+<?php
+require_once 'config/db.php';
+
+$message_success = '';
+$message_error = '';
+
+/* RECUPERATION DES PIECES EN STOCK */
+$sql = "SELECT * FROM pieces WHERE statut = 'disponible' AND quantite > 0 ORDER BY date_ajout DESC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$pieces = $stmt->fetchAll();
+
+/* TRAITEMENT DU FORMULAIRE */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_piece = !empty($_POST['id_piece']) ? (int) $_POST['id_piece'] : null;
+    $nom_client = trim($_POST['nom'] ?? '');
+    $email_client = trim($_POST['email'] ?? '');
+    $telephone_client = trim($_POST['telephone'] ?? '');
+    $marque_vehicule = trim($_POST['marque_vehicule'] ?? '');
+    $modele_vehicule = trim($_POST['modele_vehicule'] ?? '');
+    $annee_vehicule = trim($_POST['annee_vehicule'] ?? '');
+    $piece_recherchee = trim($_POST['piece_recherchee'] ?? '');
+    $reference_piece = trim($_POST['reference_piece'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+
+    if (
+        empty($nom_client) ||
+        empty($email_client) ||
+        empty($telephone_client) ||
+        empty($piece_recherchee)
+    ) {
+        $message_error = "Veuillez remplir les champs obligatoires.";
+    } elseif (!filter_var($email_client, FILTER_VALIDATE_EMAIL)) {
+        $message_error = "L'adresse email n'est pas valide.";
+    } else {
+        $insert = $pdo->prepare("
+            INSERT INTO demandes_pieces (
+                id_piece,
+                nom_client,
+                email_client,
+                telephone_client,
+                marque_vehicule,
+                modele_vehicule,
+                annee_vehicule,
+                piece_recherchee,
+                reference_piece,
+                message
+            ) VALUES (
+                :id_piece,
+                :nom_client,
+                :email_client,
+                :telephone_client,
+                :marque_vehicule,
+                :modele_vehicule,
+                :annee_vehicule,
+                :piece_recherchee,
+                :reference_piece,
+                :message
+            )
+        ");
+
+        $insert->execute([
+            ':id_piece' => $id_piece,
+            ':nom_client' => $nom_client,
+            ':email_client' => $email_client,
+            ':telephone_client' => $telephone_client,
+            ':marque_vehicule' => $marque_vehicule,
+            ':modele_vehicule' => $modele_vehicule,
+            ':annee_vehicule' => $annee_vehicule,
+            ':piece_recherchee' => $piece_recherchee,
+            ':reference_piece' => $reference_piece,
+            ':message' => $message
+        ]);
+
+        $message_success = "Votre demande de pièce a bien été envoyée. Le garage vous recontactera rapidement.";
+    }
+}
+
+include 'includes/header.php';
+?>
 
 <main>
 
@@ -73,29 +152,49 @@
         </div>
 
         <div class="parts-grid" id="partsGrid">
+            <?php if (count($pieces) > 0): ?>
 
-            <!-- PIECE 1 -->
+        <?php foreach ($pieces as $piece): ?>
+
             <article class="part-card"
-                data-name="Alternateur Renault Clio IV"
-                data-category="moteur"
-                data-brand="renault"
-                data-reference="ALT-REN-CLIO4-120"
-                data-price="129 €">
+                data-id="<?= htmlspecialchars($piece['id_piece']) ?>"
+                data-name="<?= htmlspecialchars($piece['nom']) ?>"
+                data-category="<?= htmlspecialchars($piece['categorie']) ?>"
+                data-brand="<?= htmlspecialchars(strtolower($piece['marque'])) ?>"
+                data-reference="<?= htmlspecialchars($piece['reference_piece']) ?>"
+                data-price="<?= !empty($piece['prix']) ? number_format($piece['prix'], 0, ',', ' ') . ' €' : 'Sur devis' ?>">
 
-                <div class="part-img placeholder-img">Image pièce</div>
+                <div class="part-img placeholder-img">
+                    <?php if (!empty($piece['image'])): ?>
+                        <img 
+                            src="<?= htmlspecialchars($piece['image']) ?>" 
+                            alt="<?= htmlspecialchars($piece['nom']) ?>"
+                        >
+                    <?php else: ?>
+                        Image pièce
+                    <?php endif; ?>
+                </div>
 
                 <div class="part-content">
                     <span class="badge">Disponible</span>
-                    <h3>Alternateur Renault Clio IV</h3>
-                    <p>Compatible Renault Clio IV · Essence/Diesel selon version</p>
+
+                    <h3><?= htmlspecialchars($piece['nom']) ?></h3>
+
+                    <p>
+                        Compatible <?= htmlspecialchars($piece['marque']) ?>
+                        <?= htmlspecialchars($piece['modele_compatible']) ?>
+                    </p>
 
                     <ul class="part-details">
-                        <li>Catégorie : Moteur</li>
-                        <li>Référence : ALT-REN-CLIO4-120</li>
-                        <li>État : Occasion contrôlée</li>
+                        <li>Catégorie : <?= ucfirst(htmlspecialchars($piece['categorie'])) ?></li>
+                        <li>Référence : <?= htmlspecialchars($piece['reference_piece']) ?></li>
+                        <li>État : <?= ucfirst(htmlspecialchars($piece['etat'])) ?></li>
+                        <li>Quantité : <?= htmlspecialchars($piece['quantite']) ?></li>
                     </ul>
 
-                    <strong>129 €</strong>
+                    <strong>
+                        <?= !empty($piece['prix']) ? number_format($piece['prix'], 0, ',', ' ') . ' €' : 'Sur devis' ?>
+                    </strong>
 
                     <button type="button" class="btn-small select-part-btn">
                         Sélectionner cette pièce
@@ -103,151 +202,19 @@
                 </div>
             </article>
 
-            <!-- PIECE 2 -->
-            <article class="part-card"
-                data-name="Pare-chocs avant Peugeot 208"
-                data-category="carrosserie"
-                data-brand="peugeot"
-                data-reference="PC-PEU-208-AV"
-                data-price="180 €">
+        <?php endforeach; ?>
 
-                <div class="part-img placeholder-img">Image pièce</div>
+    <?php else: ?>
 
-                <div class="part-content">
-                    <span class="badge">Disponible</span>
-                    <h3>Pare-chocs avant Peugeot 208</h3>
-                    <p>Compatible Peugeot 208 · À repeindre selon couleur véhicule</p>
+        <div class="empty-state">
+            <h3>Aucune pièce disponible</h3>
+            <p>Aucune pièce n’est actuellement en stock.</p>
+        </div>
 
-                    <ul class="part-details">
-                        <li>Catégorie : Carrosserie</li>
-                        <li>Référence : PC-PEU-208-AV</li>
-                        <li>État : Bon état</li>
-                    </ul>
+    <?php endif; ?>
 
-                    <strong>180 €</strong>
 
-                    <button type="button" class="btn-small select-part-btn">
-                        Sélectionner cette pièce
-                    </button>
-                </div>
-            </article>
-
-            <!-- PIECE 3 -->
-            <article class="part-card"
-                data-name="Phare avant droit Citroën C3"
-                data-category="optique"
-                data-brand="citroen"
-                data-reference="PH-CIT-C3-AVD"
-                data-price="95 €">
-
-                <div class="part-img placeholder-img">Image pièce</div>
-
-                <div class="part-content">
-                    <span class="badge">Disponible</span>
-                    <h3>Phare avant droit Citroën C3</h3>
-                    <p>Optique avant droit compatible Citroën C3</p>
-
-                    <ul class="part-details">
-                        <li>Catégorie : Optique</li>
-                        <li>Référence : PH-CIT-C3-AVD</li>
-                        <li>État : Occasion</li>
-                    </ul>
-
-                    <strong>95 €</strong>
-
-                    <button type="button" class="btn-small select-part-btn">
-                        Sélectionner cette pièce
-                    </button>
-                </div>
-            </article>
-
-            <!-- PIECE 4 -->
-            <article class="part-card"
-                data-name="Disques de frein Volkswagen Golf"
-                data-category="freinage"
-                data-brand="volkswagen"
-                data-reference="FR-VW-GOLF-DISQ"
-                data-price="75 €">
-
-                <div class="part-img placeholder-img">Image pièce</div>
-
-                <div class="part-content">
-                    <span class="badge">Disponible</span>
-                    <h3>Disques de frein Volkswagen Golf</h3>
-                    <p>Jeu de disques de frein avant pour Volkswagen Golf</p>
-
-                    <ul class="part-details">
-                        <li>Catégorie : Freinage</li>
-                        <li>Référence : FR-VW-GOLF-DISQ</li>
-                        <li>État : Neuf</li>
-                    </ul>
-
-                    <strong>75 €</strong>
-
-                    <button type="button" class="btn-small select-part-btn">
-                        Sélectionner cette pièce
-                    </button>
-                </div>
-            </article>
-
-            <!-- PIECE 5 -->
-            <article class="part-card"
-                data-name="Rétroviseur gauche Mercedes Classe A"
-                data-category="carrosserie"
-                data-brand="mercedes"
-                data-reference="RET-MER-CLA-G"
-                data-price="145 €">
-
-                <div class="part-img placeholder-img">Image pièce</div>
-
-                <div class="part-content">
-                    <span class="badge">Disponible</span>
-                    <h3>Rétroviseur gauche Mercedes Classe A</h3>
-                    <p>Rétroviseur extérieur gauche électrique</p>
-
-                    <ul class="part-details">
-                        <li>Catégorie : Carrosserie</li>
-                        <li>Référence : RET-MER-CLA-G</li>
-                        <li>État : Très bon état</li>
-                    </ul>
-
-                    <strong>145 €</strong>
-
-                    <button type="button" class="btn-small select-part-btn">
-                        Sélectionner cette pièce
-                    </button>
-                </div>
-            </article>
-
-            <!-- PIECE 6 -->
-            <article class="part-card"
-                data-name="Siège avant Renault Mégane"
-                data-category="interieur"
-                data-brand="renault"
-                data-reference="SIE-REN-MEG-AV"
-                data-price="210 €">
-
-                <div class="part-img placeholder-img">Image pièce</div>
-
-                <div class="part-content">
-                    <span class="badge">Disponible</span>
-                    <h3>Siège avant Renault Mégane</h3>
-                    <p>Siège avant conducteur pour Renault Mégane</p>
-
-                    <ul class="part-details">
-                        <li>Catégorie : Intérieur</li>
-                        <li>Référence : SIE-REN-MEG-AV</li>
-                        <li>État : Occasion contrôlée</li>
-                    </ul>
-
-                    <strong>210 €</strong>
-
-                    <button type="button" class="btn-small select-part-btn">
-                        Sélectionner cette pièce
-                    </button>
-                </div>
-            </article>
-
+        
         </div>
     </section>
 
@@ -258,13 +225,25 @@
             <h2>Envoyer une demande au garage</h2>
         </div>
 
-        <form class="form part-request-form">
+        <form class="form part-request-form" method="POST" action="demande_piece.php#formulaire-piece">
+
+            <?php if (!empty($message_success)): ?>
+                <div class="alert alert-success">
+                    <?= htmlspecialchars($message_success) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($message_error)): ?>
+                <div class="alert alert-error">
+                    <?= htmlspecialchars($message_error) ?>
+                </div>
+            <?php endif; ?>
 
             <div class="selected-part-box" id="selectedPartBox">
                 <p>Aucune pièce sélectionnée pour le moment.</p>
             </div>
 
-            <input type="hidden" name="piece_selectionnee" id="pieceSelectionnee">
+            <input type="hidden" name="id_piece" id="idPiece">
 
             <div class="form-row">
                 <input type="text" name="nom" placeholder="Nom complet" required>

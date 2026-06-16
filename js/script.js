@@ -66,7 +66,7 @@ if (pieceSearch && pieceCategory && pieceBrand) {
 
 const selectPartButtons = document.querySelectorAll(".select-part-btn");
 const selectedPartBox = document.getElementById("selectedPartBox");
-const pieceSelectionnee = document.getElementById("pieceSelectionnee");
+const idPiece = document.getElementById("idPiece");
 const pieceRecherchee = document.getElementById("pieceRecherchee");
 const referencePiece = document.getElementById("referencePiece");
 const messagePiece = document.getElementById("messagePiece");
@@ -79,8 +79,10 @@ selectPartButtons.forEach((button) => {
         const reference = card.dataset.reference;
         const price = card.dataset.price;
 
-        if (pieceSelectionnee) {
-            pieceSelectionnee.value = `${name} - ${reference} - ${price}`;
+        const id = card.dataset.id;
+
+        if (idPiece) {
+            idPiece.value = id;
         }
 
         if (pieceRecherchee) {
