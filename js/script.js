@@ -120,3 +120,18 @@ selectPartButtons.forEach((button) => {
 });
 
 console.log("Site Garage chargé avec succès.");
+
+/* SELECTION D'UNE FORMULE DE NETTOYAGE */
+
+const selectCleaningButtons = document.querySelectorAll(".select-cleaning-btn");
+const idServiceNettoyage = document.getElementById("idServiceNettoyage");
+
+selectCleaningButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        const serviceId = button.dataset.id;
+
+        if (idServiceNettoyage) {
+            idServiceNettoyage.value = serviceId;
+        }
+    });
+});

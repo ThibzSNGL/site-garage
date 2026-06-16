@@ -1,4 +1,71 @@
-<?php include 'includes/header.php'; ?>
+<?php
+require_once 'config/db.php';
+
+$message_success = '';
+$message_error = '';
+
+/* RECUPERATION DES SERVICES DE NETTOYAGE */
+$sql = "SELECT * FROM services_nettoyage WHERE actif = 1 ORDER BY prix_depart ASC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$services = $stmt->fetchAll();
+
+/* TRAITEMENT DU FORMULAIRE */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_service = !empty($_POST['id_service']) ? (int) $_POST['id_service'] : null;
+    $nom_client = trim($_POST['nom'] ?? '');
+    $email_client = trim($_POST['email'] ?? '');
+    $telephone_client = trim($_POST['telephone'] ?? '');
+    $vehicule = trim($_POST['vehicule'] ?? '');
+    $date_souhaitee = trim($_POST['date_souhaitee'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+
+    if (
+        empty($nom_client) ||
+        empty($email_client) ||
+        empty($telephone_client) ||
+        empty($id_service)
+    ) {
+        $message_error = "Veuillez remplir les champs obligatoires.";
+    } elseif (!filter_var($email_client, FILTER_VALIDATE_EMAIL)) {
+        $message_error = "L'adresse email n'est pas valide.";
+    } else {
+        $insert = $pdo->prepare("
+            INSERT INTO demandes_nettoyage (
+                id_service,
+                nom_client,
+                email_client,
+                telephone_client,
+                vehicule,
+                date_souhaitee,
+                message
+            ) VALUES (
+                :id_service,
+                :nom_client,
+                :email_client,
+                :telephone_client,
+                :vehicule,
+                :date_souhaitee,
+                :message
+            )
+        ");
+
+        $insert->execute([
+            ':id_service' => $id_service,
+            ':nom_client' => $nom_client,
+            ':email_client' => $email_client,
+            ':telephone_client' => $telephone_client,
+            ':vehicule' => $vehicule,
+            ':date_souhaitee' => !empty($date_souhaitee) ? $date_souhaitee : null,
+            ':message' => $message
+        ]);
+
+        $message_success = "Votre demande de créneau nettoyage a bien été envoyée. Le garage vous recontactera rapidement.";
+    }
+}
+
+include 'includes/header.php';
+?>
 
 <main>
 
@@ -53,113 +120,79 @@
 
         <div class="cleaning-grid">
 
-            <!-- FORMULE 1 -->
-            <article class="cleaning-card">
-                <div class="cleaning-card-header">
-                    <span class="cleaning-icon">🧽</span>
-                    <span class="badge">Rapide</span>
+            <?php if (count($services) > 0): ?>
+
+            <?php foreach ($services as $service): ?>
+
+                <?php
+                    $icone = '🧽';
+                    $badge = 'Service';
+
+                    if ($service['slug'] === 'interieur') {
+                        $icone = '🧽';
+                        $badge = 'Intérieur';
+                    } elseif ($service['slug'] === 'exterieur') {
+                        $icone = '🚗';
+                        $badge = 'Extérieur';
+                    } elseif ($service['slug'] === 'complet') {
+                        $icone = '✨';
+                        $badge = 'Populaire';
+                    } elseif ($service['slug'] === 'detailing-premium') {
+                        $icone = '💎';
+                        $badge = 'Premium';
+                    }
+
+                    $is_featured = $service['slug'] === 'complet' ? 'featured-cleaning' : '';
+                ?>
+
+                <article class="cleaning-card <?= $is_featured ?>">
+                    <div class="cleaning-card-header">
+                        <span class="cleaning-icon"><?= $icone ?></span>
+                        <span class="badge"><?= htmlspecialchars($badge) ?></span>
+                    </div>
+
+                    <h3><?= htmlspecialchars($service['nom']) ?></h3>
+
+                    <p>
+                        <?= htmlspecialchars($service['description']) ?>
+                    </p>
+
+                    <ul class="cleaning-list">
+                        <li>Durée estimée : <?= htmlspecialchars($service['duree_estimee']) ?></li>
+                        <li>Prestation adaptée selon l’état du véhicule</li>
+                        <li>Confirmation du créneau par le garage</li>
+                    </ul>
+
+                    <div class="cleaning-price">
+                        <?php if (!empty($service['prix_depart'])): ?>
+                            <span>À partir de</span>
+                            <strong><?= number_format($service['prix_depart'], 0, ',', ' ') ?> €</strong>
+                        <?php else: ?>
+                            <span>Tarif</span>
+                            <strong>Sur devis</strong>
+                        <?php endif; ?>
+                    </div>
+
+                    <a 
+                        href="#demande-nettoyage" 
+                        class="btn-small select-cleaning-btn"
+                        data-id="<?= htmlspecialchars($service['id_service']) ?>"
+                        data-name="<?= htmlspecialchars($service['nom']) ?>"
+                    >
+                        Demander
+                    </a>
+                </article>
+
+            <?php endforeach; ?>
+
+            <?php else: ?>
+
+                <div class="empty-state">
+                    <h3>Aucune formule disponible</h3>
+                    <p>Les prestations de nettoyage seront bientôt affichées.</p>
                 </div>
 
-                <h3>Nettoyage intérieur</h3>
-                <p>
-                    Idéal pour retrouver un habitacle propre et agréable au quotidien.
-                </p>
-
-                <ul class="cleaning-list">
-                    <li>Aspiration complète</li>
-                    <li>Nettoyage des plastiques</li>
-                    <li>Nettoyage tapis et moquettes</li>
-                    <li>Vitres intérieures</li>
-                </ul>
-
-                <div class="cleaning-price">
-                    <span>À partir de</span>
-                    <strong>49 €</strong>
-                </div>
-
-                <a href="#demande-nettoyage" class="btn-small">Demander</a>
-            </article>
-
-            <!-- FORMULE 2 -->
-            <article class="cleaning-card">
-                <div class="cleaning-card-header">
-                    <span class="cleaning-icon">🚗</span>
-                    <span class="badge">Extérieur</span>
-                </div>
-
-                <h3>Nettoyage extérieur</h3>
-                <p>
-                    Pour une carrosserie propre, brillante et prête à reprendre la route.
-                </p>
-
-                <ul class="cleaning-list">
-                    <li>Lavage carrosserie</li>
-                    <li>Nettoyage des jantes</li>
-                    <li>Vitres extérieures</li>
-                    <li>Séchage et finition</li>
-                </ul>
-
-                <div class="cleaning-price">
-                    <span>À partir de</span>
-                    <strong>39 €</strong>
-                </div>
-
-                <a href="#demande-nettoyage" class="btn-small">Demander</a>
-            </article>
-
-            <!-- FORMULE 3 -->
-            <article class="cleaning-card featured-cleaning">
-                <div class="cleaning-card-header">
-                    <span class="cleaning-icon">✨</span>
-                    <span class="badge">Populaire</span>
-                </div>
-
-                <h3>Nettoyage complet</h3>
-                <p>
-                    La formule la plus équilibrée pour un véhicule propre dedans comme dehors.
-                </p>
-
-                <ul class="cleaning-list">
-                    <li>Nettoyage intérieur complet</li>
-                    <li>Nettoyage extérieur complet</li>
-                    <li>Vitres intérieures et extérieures</li>
-                    <li>Finitions soignées</li>
-                </ul>
-
-                <div class="cleaning-price">
-                    <span>À partir de</span>
-                    <strong>89 €</strong>
-                </div>
-
-                <a href="#demande-nettoyage" class="btn-small">Demander</a>
-            </article>
-
-            <!-- FORMULE 4 -->
-            <article class="cleaning-card">
-                <div class="cleaning-card-header">
-                    <span class="cleaning-icon">💎</span>
-                    <span class="badge">Premium</span>
-                </div>
-
-                <h3>Detailing premium</h3>
-                <p>
-                    Pour un nettoyage approfondi avec un niveau de finition supérieur.
-                </p>
-
-                <ul class="cleaning-list">
-                    <li>Nettoyage approfondi</li>
-                    <li>Traitement des surfaces</li>
-                    <li>Finitions premium</li>
-                    <li>Prestation personnalisée</li>
-                </ul>
-
-                <div class="cleaning-price">
-                    <span>Tarif</span>
-                    <strong>Sur devis</strong>
-                </div>
-
-                <a href="#demande-nettoyage" class="btn-small">Demander</a>
-            </article>
+            <?php endif; ?>
 
         </div>
     </section>
@@ -205,7 +238,21 @@
             <h2>Réserver un créneau nettoyage</h2>
         </div>
 
-        <form class="form cleaning-form">
+        <form class="form cleaning-form" method="POST" action="nettoyage.php#demande-nettoyage">
+
+            <?php if (!empty($message_success)): ?>
+                <div class="alert alert-success">
+                    <?= htmlspecialchars($message_success) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($message_error)): ?>
+                <div class="alert alert-error">
+                    <?= htmlspecialchars($message_error) ?>
+                </div>
+            <?php endif; ?>
+
+
             <div class="form-row">
                 <input type="text" name="nom" placeholder="Nom complet" required>
                 <input type="email" name="email" placeholder="Adresse email" required>
@@ -214,12 +261,19 @@
             <div class="form-row">
                 <input type="tel" name="telephone" placeholder="Téléphone" required>
 
-                <select name="type_nettoyage" required>
+                <select name="id_service" id="idServiceNettoyage" required>
                     <option value="">Type de nettoyage souhaité</option>
-                    <option value="interieur">Nettoyage intérieur</option>
-                    <option value="exterieur">Nettoyage extérieur</option>
-                    <option value="complet">Nettoyage complet</option>
-                    <option value="detailing">Detailing premium</option>
+
+                    <?php foreach ($services as $service): ?>
+                        <option value="<?= htmlspecialchars($service['id_service']) ?>">
+                            <?= htmlspecialchars($service['nom']) ?>
+                            <?php if (!empty($service['prix_depart'])): ?>
+                                - dès <?= number_format($service['prix_depart'], 0, ',', ' ') ?> €
+                            <?php else: ?>
+                                - sur devis
+                            <?php endif; ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 
