@@ -1032,3 +1032,156 @@ textarea {
         padding: 25px 18px;
     }
 }
+
+/* PAGE PIECES */
+
+.parts-hero {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.9)),
+        url("../img/services/pieces-bg.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+/* FILTRES PIECES */
+
+.parts-filters {
+    max-width: 1150px;
+    margin: 0 auto 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+}
+
+.parts-filters input,
+.parts-filters select {
+    background: #fff;
+    color: #111;
+}
+
+/* GRILLE PIECES */
+
+.parts-grid {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.part-card {
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 14px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.part-card:hover {
+    transform: translateY(-8px);
+    border-color: #e63946;
+}
+
+.part-img {
+    height: 190px;
+    position: relative;
+}
+
+.part-content {
+    padding: 25px;
+}
+
+.part-content h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.part-content p {
+    color: #ccc;
+    margin-bottom: 16px;
+}
+
+.part-details {
+    list-style: none;
+    margin-bottom: 18px;
+    display: grid;
+    gap: 6px;
+}
+
+.part-details li {
+    color: #ddd;
+    font-size: 14px;
+}
+
+.part-details li::before {
+    content: "• ";
+    color: #e63946;
+    font-weight: bold;
+}
+
+.part-content strong {
+    display: block;
+    color: #e63946;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+/* FORMULAIRE PIECE */
+
+.part-request-form {
+    background: #fff;
+    color: #111;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+}
+
+.selected-part-box {
+    background: #f5f5f5;
+    border: 1px dashed #bbb;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.selected-part-box.active {
+    background: rgba(230, 57, 70, 0.08);
+    border-color: #e63946;
+}
+
+.selected-part-box p {
+    margin: 0;
+    color: #555;
+}
+
+.selected-part-box strong {
+    color: #e63946;
+}
+
+/* PIECE MASQUEE PAR FILTRE */
+
+.part-card.hidden {
+    display: none;
+}
+
+/* RESPONSIVE PIECES */
+
+@media screen and (max-width: 1000px) {
+    .parts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .parts-filters {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .parts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .part-request-form {
+        padding: 25px 18px;
+    }
+}
