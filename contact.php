@@ -1,4 +1,59 @@
-<?php include 'includes/header.php'; ?>
+<?php
+require_once 'config/db.php';
+
+$message_success = '';
+$message_error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom_client = trim($_POST['nom'] ?? '');
+    $email_client = trim($_POST['email'] ?? '');
+    $telephone_client = trim($_POST['telephone'] ?? '');
+    $sujet = trim($_POST['sujet'] ?? 'autre');
+    $message = trim($_POST['message'] ?? '');
+
+    $sujets_valides = ['vehicule', 'nettoyage', 'piece', 'autre'];
+
+    if (
+        empty($nom_client) ||
+        empty($email_client) ||
+        empty($message)
+    ) {
+        $message_error = "Veuillez remplir les champs obligatoires.";
+    } elseif (!filter_var($email_client, FILTER_VALIDATE_EMAIL)) {
+        $message_error = "L'adresse email n'est pas valide.";
+    } elseif (!in_array($sujet, $sujets_valides)) {
+        $message_error = "Le sujet sélectionné n'est pas valide.";
+    } else {
+        $insert = $pdo->prepare("
+            INSERT INTO messages_contact (
+                nom_client,
+                email_client,
+                telephone_client,
+                sujet,
+                message
+            ) VALUES (
+                :nom_client,
+                :email_client,
+                :telephone_client,
+                :sujet,
+                :message
+            )
+        ");
+
+        $insert->execute([
+            ':nom_client' => $nom_client,
+            ':email_client' => $email_client,
+            ':telephone_client' => $telephone_client,
+            ':sujet' => $sujet,
+            ':message' => $message
+        ]);
+
+        $message_success = "Votre message a bien été envoyé. Le garage vous recontactera rapidement.";
+    }
+}
+
+include 'includes/header.php';
+?>
 
 <main>
 
@@ -93,7 +148,19 @@
             </div>
 
             <!-- FORMULAIRE -->
-            <form class="form contact-page-form">
+            <form class="form contact-page-form" method="POST" action="contact.php">
+                <?php if (!empty($message_success)): ?>
+                    <div class="alert alert-success">
+                        <?= htmlspecialchars($message_success) ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($message_error)): ?>
+                    <div class="alert alert-error">
+                        <?= htmlspecialchars($message_error) ?>
+                    </div>
+                <?php endif; ?>
+                
                 <div class="form-row">
                     <input type="text" name="nom" placeholder="Nom complet" required>
                     <input type="email" name="email" placeholder="Adresse email" required>
