@@ -680,3 +680,84 @@ body {
         min-width: 220px;
     }
 }
+
+/* FORMULAIRES ADMIN */
+
+.admin-form {
+    display: grid;
+    gap: 22px;
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.admin-form-group {
+    display: grid;
+    gap: 8px;
+}
+
+.admin-form-group label {
+    font-weight: bold;
+    color: #222;
+}
+
+.admin-form-group input,
+.admin-form-group select,
+.admin-form-group textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+}
+
+.admin-form-group textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.admin-form-group small {
+    color: #777;
+    font-size: 13px;
+}
+
+.admin-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.admin-checkbox input {
+    width: 18px;
+    height: 18px;
+}
+
+.admin-form-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-cancel-btn {
+    display: inline-block;
+    background: #eee;
+    color: #111;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* RESPONSIVE FORM ADMIN */
+
+@media screen and (max-width: 800px) {
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
