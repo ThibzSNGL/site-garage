@@ -512,3 +512,25 @@ body {
         flex-direction: column;
     }
 }
+
+/* STATUTS NETTOYAGE */
+
+.status-confirmee {
+    background: rgba(46, 204, 113, 0.14);
+    color: #1e8449;
+}
+
+.status-refusee {
+    background: rgba(230, 57, 70, 0.14);
+    color: #e63946;
+}
+
+.status-realisee {
+    background: rgba(52, 152, 219, 0.14);
+    color: #2471a3;
+}
+
+.status-annulee {
+    background: rgba(127, 140, 141, 0.18);
+    color: #566573;
+}
