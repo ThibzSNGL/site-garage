@@ -761,3 +761,28 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* IMAGE ACTUELLE VEHICULE */
+
+.admin-current-image {
+    background: #f7f7f7;
+    border: 1px solid #e5e5e5;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.admin-current-image p {
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #222;
+}
+
+.admin-current-image img {
+    width: 100%;
+    max-width: 420px;
+    height: 230px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+}
