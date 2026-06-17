@@ -336,3 +336,179 @@ body {
         padding: 28px 22px;
     }
 }
+
+/* ALERT SUCCESS */
+
+.admin-alert-success {
+    background: rgba(46, 204, 113, 0.12);
+    color: #1e8449;
+    border: 1px solid rgba(46, 204, 113, 0.4);
+}
+
+/* FILTRES ADMIN */
+
+.admin-filter-form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.admin-filter-form select,
+.admin-filter-form button {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.admin-filter-form button {
+    background: #e63946;
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.admin-filter-form a {
+    color: #e63946;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* DEMANDES ADMIN */
+
+.admin-requests-grid {
+    display: grid;
+    gap: 22px;
+}
+
+.admin-request-card {
+    background: #f8f8f8;
+    border: 1px solid #e5e5e5;
+    border-radius: 14px;
+    padding: 25px;
+}
+
+.request-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 22px;
+}
+
+.request-card-header h3 {
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+.request-card-header small {
+    color: #777;
+    white-space: nowrap;
+}
+
+.request-status {
+    display: inline-block;
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 13px;
+    text-transform: capitalize;
+}
+
+.status-nouvelle {
+    background: rgba(52, 152, 219, 0.14);
+    color: #2471a3;
+}
+
+.status-en_cours {
+    background: rgba(241, 196, 15, 0.18);
+    color: #9a7d0a;
+}
+
+.status-trouvee {
+    background: rgba(46, 204, 113, 0.14);
+    color: #1e8449;
+}
+
+.status-impossible {
+    background: rgba(230, 57, 70, 0.14);
+    color: #e63946;
+}
+
+.status-terminee {
+    background: rgba(127, 140, 141, 0.18);
+    color: #566573;
+}
+
+.request-card-body {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.request-section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.request-section.full {
+    grid-column: 1 / -1;
+}
+
+.request-section h4 {
+    margin-bottom: 10px;
+    color: #e63946;
+}
+
+.request-section p {
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.request-update-form {
+    background: #fff;
+    padding: 18px;
+    border-radius: 10px;
+    display: grid;
+    gap: 12px;
+}
+
+.request-update-form select,
+.request-update-form textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.request-update-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.admin-save-btn {
+    justify-self: flex-start;
+    background: #111;
+    color: #fff;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* RESPONSIVE DEMANDES ADMIN */
+
+@media screen and (max-width: 900px) {
+    .request-card-body {
+        grid-template-columns: 1fr;
+    }
+
+    .request-card-header {
+        flex-direction: column;
+    }
+}
