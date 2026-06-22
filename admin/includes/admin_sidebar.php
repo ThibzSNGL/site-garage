@@ -12,6 +12,10 @@
             Véhicules
         </a>
 
+        <a href="pieces.php" class="<?= $current_admin_page === 'pieces.php' ? 'active' : '' ?>">
+            Pièces
+        </a>
+        
         <a href="demandes_pieces.php" class="<?= $current_admin_page === 'demandes_pieces.php' ? 'active' : '' ?>">
             Demandes pièces
         </a>
@@ -23,7 +27,7 @@
         <a href="messages_contact.php" class="<?= $current_admin_page === 'messages_contact.php' ? 'active' : '' ?>">
             Messages contact
         </a>
-        
+
         <a href="mon_compte.php" class="<?= $current_admin_page === 'mon_compte.php' ? 'active' : '' ?>">
             Mon compte
         </a>
