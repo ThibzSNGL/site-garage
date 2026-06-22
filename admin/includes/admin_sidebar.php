@@ -19,7 +19,11 @@
         <a href="demandes_nettoyage.php" class="<?= $current_admin_page === 'demandes_nettoyage.php' ? 'active' : '' ?>">
             Demandes nettoyage
         </a>
-
+        
+        <a href="messages_contact.php" class="<?= $current_admin_page === 'messages_contact.php' ? 'active' : '' ?>">
+            Messages contact
+        </a>
+        
         <a href="mon_compte.php" class="<?= $current_admin_page === 'mon_compte.php' ? 'active' : '' ?>">
             Mon compte
         </a>
