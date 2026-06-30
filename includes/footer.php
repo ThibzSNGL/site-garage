@@ -1,7 +1,7 @@
 <footer class="footer">
     <div class="footer-container">
         <div class="footer-col">
-            <h3><span>Site</span> Garage</h3>
+            <h3><span>France Auto</span>Concept</h3>
             <p>
                 Vente de véhicules d’occasion, nettoyage automobile
                 et recherche de pièces mécaniques.
@@ -21,9 +21,9 @@
 
         <div class="footer-col">
             <h4>Contact</h4>
-            <p>12 Rue Exemple, 18100 Vierzon</p>
-            <p>06 00 00 00 00</p>
-            <p>contact@sitegarage.fr</p>
+            <p>19 avenue du 19 mars, 18100 Vierzon</p>
+            <p>06 43 11 52 99</p>
+            <p>franceautoconceot1@gmail.com</p>
         </div>
 
         <div class="footer-col">
@@ -35,16 +35,16 @@
     </div>
 
     <div class="footer-bottom">
-        <p>© 2026 Site Garage. Tous droits réservés.</p>
+        <p>© 2026 France Auto Concept. Tous droits réservés.</p>
     </div>
 </footer>
 
 <div class="floating-actions">
-    <a href="tel:0600000000" class="floating-btn phone-btn" title="Appeler">
+    <a href="tel:06 43 11 52 99" class="floating-btn phone-btn" title="Appeler">
         ☎
     </a>
 
-    <a href="https://wa.me/33600000000" target="_blank" class="floating-btn whatsapp-btn" title="WhatsApp">
+    <a href="https://wa.me/33643115299" target="_blank" class="floating-btn whatsapp-btn" title="WhatsApp">
         ✆
     </a>
 </div>

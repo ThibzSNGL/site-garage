@@ -7,7 +7,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Garage</title>
+    <title>France Auto Concept</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,7 +15,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <header class="header">
     <nav class="navbar">
         <a href="index.php" class="logo">
-            <span>Site</span> Garage
+            <span>France Auto</span>  Concept
         </a>
 
         <ul class="nav-links" id="navLinks">
